@@ -111,7 +111,7 @@ function cetakKartuNotifikasi(array $kartu): void
             <?php endforeach; ?>
         </ul>
         <?php if ($items): ?>
-        <div style="padding:0 14px 14px;">
+        <div class="notif-card__foot">
             <button type="button" class="btn btn--sm btn--ghost btn--block btn-toggle-selesai">Tampilkan yang sudah selesai</button>
         </div>
         <?php endif; ?>
@@ -230,9 +230,20 @@ function cetakKartuNotifikasi(array $kartu): void
             $grid.css('height', ''); // di layar sempit, biarkan mengalir normal & halaman yang discroll
             return;
         }
+
+        // Jumlah baris grid saat ini menentukan tinggi minimum yang AMAN
+        // (harus sama/lebih dari min-height kartu di CSS, 220px, supaya
+        // header/counter/footer kartu tidak pernah diperas sampai tumpang
+        // tindih). Kalau tinggi layar yang tersisa kurang dari batas aman
+        // ini, JANGAN dipaksakan pas satu layar — biarkan grid membesar
+        // ke tinggi minimumnya lalu halaman yang discroll. Lebih baik
+        // scroll sedikit daripada tampilan rusak/bertumpuk.
+        const jumlahBaris = window.innerWidth <= 1400 ? 4 : 2;
+        const tinggiMinimumAman = jumlahBaris * 220 + (jumlahBaris - 1) * 18; // 18px = gap grid
+
         const top = $grid[0].getBoundingClientRect().top;
-        const tinggiTersedia = Math.max(window.innerHeight - top - 24, 420);
-        $grid.css('height', tinggiTersedia + 'px');
+        const tinggiTersedia = window.innerHeight - top - 24;
+        $grid.css('height', Math.max(tinggiTersedia, tinggiMinimumAman) + 'px');
     }
 
     let resizeTimer = null;

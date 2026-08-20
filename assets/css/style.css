@@ -412,19 +412,37 @@ input:focus, .select-control:focus, .text-control:focus {
 .notif-grid--overview {
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
+    align-items: stretch;
 }
-.notif-grid--overview .notif-card { height: 100%; min-height: 0; }
-.notif-grid--overview .notif-card__list { flex: 1 1 auto; min-height: 0; max-height: none; }
+/* Kartu diberi tinggi minimum yang aman (cukup untuk header + counter + footer
+   + minimal 1 baris surat) supaya walau ruang layar dipadatkan lewat JS,
+   header/counter/tombol TIDAK IKUT diperas sampai tertindih/tumpang-tindih.
+   Kalau ruang yang tersedia kurang dari ini, grid akan scroll (lihat JS). */
+.notif-grid--overview .notif-card { height: 100%; min-height: 220px; }
+.notif-grid--overview .notif-card__list { flex: 1 1 auto; min-height: 64px; max-height: none; }
 @media (max-width: 1400px) { .notif-grid--overview { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); } }
 @media (max-width: 860px) { .notif-grid--overview { grid-template-columns: 1fr; grid-template-rows: none; height: auto !important; } }
 
-.notif-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; overflow: hidden; }
-.notif-card__head { padding: 16px 18px 12px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.notif-card__title { font-family: var(--font-display); font-size: 15px; color: var(--navy-900); }
-.notif-card__hari { font-size: 11.5px; font-weight: 700; color: var(--brass-600); background: var(--warning-100); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
-.notif-card__count { font-size: 11.5px; color: var(--ink-400); padding: 0 18px 10px; margin-top: -6px; }
-.notif-card__list { list-style: none; margin: 0; padding: 6px 10px 12px; max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-.notif-card__empty { text-align: center; color: var(--ink-400); font-size: 12.5px; padding: 24px 10px; }
+.notif-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; overflow: hidden; transition: box-shadow .15s ease, transform .15s ease; }
+.notif-grid--overview .notif-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+/* Header, counter, dan footer TIDAK BOLEH menyusut — hanya daftar surat (list)
+   yang boleh tumbuh/menyusut dan discroll secara internal. Ini mencegah teks
+   header/tombol saling tertindih saat tinggi kartu dipadatkan di Overview. */
+.notif-card__head { flex: 0 0 auto; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.notif-card__title { font-family: var(--font-display); font-size: 14.5px; color: var(--navy-900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.notif-card__hari { flex: 0 0 auto; font-size: 11px; font-weight: 700; color: var(--brass-600); background: var(--warning-100); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.notif-card__count { flex: 0 0 auto; font-size: 11.5px; color: var(--ink-400); padding: 8px 16px 8px; }
+.notif-card__list { list-style: none; margin: 0; padding: 4px 10px 10px; max-height: 260px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 7px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.notif-card__empty { text-align: center; color: var(--ink-400); font-size: 12.5px; padding: 20px 10px; }
+.notif-card__foot { flex: 0 0 auto; padding: 8px 12px 12px; border-top: 1px solid var(--line); }
+.notif-card__foot .btn { margin: 0; }
+
+/* Scrollbar tipis & rapi (mengganti scrollbar bawaan browser yang tebal
+   dengan tombol panah, supaya tidak menutupi isi kartu) */
+.notif-card__list::-webkit-scrollbar { width: 6px; }
+.notif-card__list::-webkit-scrollbar-track { background: transparent; }
+.notif-card__list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+.notif-card__list::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
 
 .notif-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius-sm); background: var(--paper-50); border: 1px solid var(--line); }
 .notif-item.is-selesai { opacity: 0.55; }
